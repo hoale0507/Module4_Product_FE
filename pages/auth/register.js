@@ -1,10 +1,11 @@
 function register(){
     let username = $('#username').val();
     let password = $('#password').val();
-    // let confirmPass = $('#confirm-password').val();
+    let confirmPass = $('#confirm-password').val();
     let user = {
         username: username,
-        password: password
+        password: password,
+        confirmPassword: confirmPass
     }
     $.ajax({
         type: 'POST',
@@ -16,6 +17,9 @@ function register(){
         },
         success: function (){
             location.href = '/ProductFE/pages/auth/login.html';
+        },
+        error: function (){
+            showErrorMessage("Register failed");
         }
     })
 }

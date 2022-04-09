@@ -1,13 +1,20 @@
+let currentUser = localStorage.getItem('currentUser'); // lay ra chuoi token
+currentUser = JSON.parse(currentUser); // chuyen token thanh json
 function showAllProduct(page){
+    let query = $('#search').val();
     $.ajax({
         type: 'GET',
-        url: `http://localhost:8080/products?page=${page}`,
+        url: `http://localhost:8080/products?page=${page}&q=${query}`,
+        headers: {
+            'Authorization': 'Bearer ' + currentUser.token
+        },
         success: function (data){
             let products = data.content;
             let content = "";
+            let currentPage = data.number;
             for (let i = 0; i < products.length; i++) {
                 content += ` <tr>
-        <th scope="row">${i + 1}</th>
+        <th scope="row">${ (currentPage+1) * 3-(2-i)}</th>
         <td>${products[i].name}</td>
         <td>${products[i].price}</td>
         <td>${products[i].description}</td>
@@ -18,11 +25,20 @@ function showAllProduct(page){
     </tr>`;
             }
             $('#product-list-content').html(content);
+
             let contentForPaging = "";
+            if(!data.first){
+                contentForPaging = ` <li class="page-item"><button class="page-link" onclick="showAllProduct(${currentPage-1})">&laquo;</button></li>`;
+            }
+
             for (let i = 0; i < data.totalPages; i++) {
                 contentForPaging += `<li class="page-item"><button class="page-link" onclick="showAllProduct(${i})">${i+1}</button></li>`
             }
+            if(!data.last){
+                contentForPaging += `<li class="page-item"><button class="page-link" href="#" onclick="showAllProduct(data.number+1)">&raquo;</button></li>`;
+            }
             $('#paging').html(contentForPaging);
+            $('#currentPage').html(`Current Page: ${currentPage+1}/${data.totalPages}`);
         }
     })
 }
@@ -43,13 +59,20 @@ function createNewProduct(){
     $.ajax({
         type: 'POST',
         url: "http://localhost:8080/products",
+        headers: {
+            'Authorization': 'Bearer ' + currentUser.token
+        },
         data: product,
         enctype: 'multipart/form-data',
         processData: false,
         contentType: false,
         success: function (){
-            showAllProduct();
+            showAllProduct(0);
             showSuccessMessage('Create completed');
+            $('#name').val(null);
+            $('#price').val(null);
+            $('#description').val(null);
+            $('#image').val(null);
         },
         error: function (){
             showErrorMessage('Created failed');
@@ -66,8 +89,11 @@ function deleteProduct(id){
     $.ajax({
         type: 'DELETE',
         url: `http://localhost:8080/products/${id}`,
+        headers: {
+            'Authorization': 'Bearer ' + currentUser.token
+        },
         success: function (){
-            showAllProduct();
+            showAllProduct(0);
             showSuccessMessage('Deleted completed');
         },
         error: function (){
@@ -87,6 +113,9 @@ function showEditForm(id){
     $.ajax({
         type:'GET',
         url:`http://localhost:8080/products/${id}`,
+        headers: {
+            'Authorization': 'Bearer ' + currentUser.token
+        },
         success: function (product){
             $('#nameEdit').val(product.name);
             $('#priceEdit').val(product.price);
@@ -112,7 +141,7 @@ function showEditForm(id){
             })
             let content1 = `
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="editProduct(${id})">Edit</button>`;
+                <button type="button" class="btn btn-primary" onclick="editProduct(${id})" data-dismiss="modal">Edit</button>`;
             $('#edit-modal-footer').html(content1);
         }
     })
@@ -123,24 +152,34 @@ function editProduct(id){
     let name = $('#nameEdit').val();
     let price = $('#priceEdit').val();
     let description = $('#descriptionEdit').val();
-    let image = $('#imageEdit');
     let category = $('#categoryEdit').val();
     let product = new FormData();
+
+    let files = $('#imageEdit').prop('files');
+
+    if (files.length != 0) {
+        let image = files[0];
+        product.append('image',image);
+    }
+
     product.append('name',name);
     product.append('description',description);
     product.append('price',price);
     product.append('category',category);
-    product.append('image',image.prop('files')[0]);
     $.ajax({
         type: 'POST',
         url: `http://localhost:8080/products/${id}`,
+        headers: {
+            'Authorization': 'Bearer ' + currentUser.token
+        },
         data: product,
         enctype: 'multipart/form-data',
         processData: false,
         contentType: false,
         success: function (){
             showSuccessMessage('Edit successfully!');
-            showAllProduct();
+            showAllProduct(0);
+            $('#imageEdit').val(null);
         },
         error: function (){
             showErrorMessage('Edit failed!');
@@ -153,6 +192,9 @@ function showCategoryList(){
     $.ajax({
         type:'GET',
         url: 'http://localhost:8080/categories',
+        headers: {
+            'Authorization': 'Bearer ' + currentUser.token
+        },
         success: function (data){
             let content =  `
                         <option>Select category</option>`;

@@ -31,6 +31,7 @@
     <!-- Toastr -->
     <link rel="stylesheet" href="../../plugins/toastr/toastr.min.css">
 
+
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
@@ -880,7 +881,7 @@
                                         <input type="text" name="table_search" class="form-control float-right" placeholder="Search" id="search">
 
                                         <div class="input-group-append">
-                                            <button type="button" class="btn btn-default" onclick="showAllProduct()">
+                                            <button type="button" class="btn btn-default" onclick="showAllProduct(0)">
                                                 <i class="fas fa-search"></i>
                                             </button>
                                         </div>
@@ -914,7 +915,8 @@
                     </div>
 <!--                    Paging-->
                     <div class="card-footer clearfix">
-                        <ul class="pagination pagination-sm m-0 float-right" id="paging">
+                        <p id="currentPage"></p>
+                        <ul class="pagination pagination-sm m-0" id="paging">
                             <li class="page-item"><button class="page-link" onclick="showAllProduct()">&laquo;</button></li>
                             <li class="page-item"><button class="page-link" onclick="showAllProduct(0)">1</button></li>
                             <li class="page-item"><button class="page-link" onclick="showAllProduct(1)">2</button></li>
@@ -961,7 +963,7 @@
             </div>
             <div class="modal-footer justify-content-between" id="create-modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="createNewProduct()">Create</button>
+                <button type="button" class="btn btn-primary" onclick="createNewProduct()" data-dismiss="modal">Create</button>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -1029,9 +1031,8 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
+<script src="product.js"></script>
 <script src="../../notification.js"></script>
-<script src="/ProductFE/product.js?_ijt=248mjpu5ukrnjs6tj5ommum9mf&_ij_reload=RELOAD_ON_SAVE"></script>
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 <script src="/plugins/jquery/jquery.min.js"></script>
