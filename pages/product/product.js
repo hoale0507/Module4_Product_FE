@@ -15,7 +15,7 @@ function showAllProduct(page){
             for (let i = 0; i < products.length; i++) {
                 content += ` <tr>
         <th scope="row">${ (currentPage+1) * 3-(2-i)}</th>
-        <td>${products[i].name}</td>
+        <td><a id="view-product" href="#" onclick="showProductDetails(${products[i].id})">${products[i].name}</a></td>
         <td>${products[i].price}</td>
         <td>${products[i].description}</td>
         <td>${products[i].category == null ? "" : products[i].category.name}</td>
@@ -203,6 +203,44 @@ function showCategoryList(){
                         <option value="${category.id}">${category.name}</option>`;
             }
             $('#category').html(content);
+        }
+    })
+}
+
+$('#view-product').on('click',function (){
+    $.ajax({
+        type: 'GET',
+        url: "http://localhost:8080/"
+    })
+})
+
+function showProductDetails(id){
+    $.ajax({
+        type:'GET',
+        url: `http://localhost:8080/${id}`,
+        headers: {
+            'Authorization': 'Bearer ' + currentUser.token
+        },
+        success: function (data){
+            let content = "<a href='ProductFE/pages/product/product.html'>Back to Product List</a>";
+            content += `<div>
+<table>
+<tr>
+<td>Name</td>
+<td>${data.name}</td>
+</tr>
+<tr>
+<td>Price</td>
+<td>${data.price}</td>
+</tr>
+<tr>
+<td>Description</td>
+<td>${data.description}</td>
+</tr>
+</table>
+<p><img src="/image/${data.image}" alt="img"></p>
+</div>`;
+            $('#main-content').html(content);
         }
     })
 }

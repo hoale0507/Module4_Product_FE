@@ -4,8 +4,10 @@ function register(){
     let confirmPass = $('#confirm-password').val();
     let user = {
         username: username,
-        password: password,
-        confirmPassword: confirmPass
+        passwordForm:{
+            password: password,
+            confirmPassword: confirmPass
+        }
     }
     $.ajax({
         type: 'POST',
@@ -15,10 +17,19 @@ function register(){
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        success: function (){
+        success: function (user){
+            console.log(user);
             location.href = '/ProductFE/pages/auth/login.html';
         },
-        error: function (){
+        error: function (errors){
+            let username_validate = errors.responseJSON.username;
+            let passWordForm_validate = errors.responseJSON.passwordForm;
+            if(username_validate != null){
+                $('#username-validate').html(username_validate);
+            }
+            if(passWordForm_validate != null){
+                $('#confirmPassword-validate').html(passWordForm_validate);
+            }
             showErrorMessage("Register failed");
         }
     })
